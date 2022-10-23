@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 
 import 'package:thesis/functions/functions.dart';
+import 'package:thesis/secrets.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 void main() => runApp(const MyApp());
 
@@ -23,6 +25,7 @@ class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final isRecording = ValueNotifier<bool>(false);
   Stream<Map<dynamic, dynamic>>? result;
+  TwilioFlutter? twilioFlutter;
 
   ///example values for decodedwav models
   // final String model = 'assets/decoded_wav_model.tflite';
@@ -84,6 +87,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    twilioFlutter = TwilioFlutter(
+      accountSid: Secret.accountSid,
+      authToken: Secret.authToken,
+      twilioNumber: Secret.twilioNumber,
+    );
     initializePerms();
     TfliteAudio.loadModel(
       // numThreads: this.numThreads,
