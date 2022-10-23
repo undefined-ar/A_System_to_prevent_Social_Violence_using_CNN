@@ -243,7 +243,7 @@ class _MyAppState extends State<MyApp> {
             children: labelList!.map((labels) {
               if (labels == result) {
                 if (result == 'scream') {
-                  CommonFunctions.sendSms();
+                  CommonFunctions.sendSms(twilioFlutter);
                   TfliteAudio.stopAudioRecognition();
                 }
                 return Padding(

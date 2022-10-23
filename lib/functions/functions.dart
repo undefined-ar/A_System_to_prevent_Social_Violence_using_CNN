@@ -1,13 +1,12 @@
-import 'package:flutter_sms/flutter_sms.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 class CommonFunctions {
   static final _contactList = ["+8801947651802"];
-  static Future<void> sendSms() async {
+  static Future<void> sendSms(TwilioFlutter? twilioFlutter) async {
     try {
-      String _result = await sendSMS(
-        message: "HELP ME PLEASE",
-        recipients: _contactList,
-        sendDirect: true,
+      await twilioFlutter?.sendSMS(
+        toNumber: '+8801772961495',
+        messageBody: 'help me plzz',
       );
     } catch (error) {
       print("FAILED TO SEND SMS");
