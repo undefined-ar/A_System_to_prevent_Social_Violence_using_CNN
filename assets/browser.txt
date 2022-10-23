@@ -1,0 +1,9 @@
+go
+down
+up
+stop
+yes
+left
+right
+no
+background
