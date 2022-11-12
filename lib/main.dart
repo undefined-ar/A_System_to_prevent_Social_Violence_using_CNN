@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'dart:developer';
@@ -26,6 +27,7 @@ class _MyAppState extends State<MyApp> {
   final isRecording = ValueNotifier<bool>(false);
   Stream<Map<dynamic, dynamic>>? result;
   TwilioFlutter? twilioFlutter;
+  Position? _currentPosition;
 
   ///example values for decodedwav models
   // final String model = 'assets/decoded_wav_model.tflite';
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> {
 
   ///Optional parameters you can adjust to modify your input and output
   final bool outputRawScores = false;
-  final int numOfInferences = 20;
+  final int numOfInferences = 99999;
   final int numThreads = 1;
   final bool isAsset = true;
 
@@ -115,9 +117,10 @@ class _MyAppState extends State<MyApp> {
     await Permission.microphone.request();
     await Permission.storage.request();
     await Permission.manageExternalStorage.request();
+    await Permission.location.request();
   }
 
-  void getResult() {
+  void getResult() async {
     ///example for stored audio file recognition
     // result = TfliteAudio.startFileRecognition(
     //   audioDirectory: audioDirectory,
@@ -143,11 +146,12 @@ class _MyAppState extends State<MyApp> {
 
     ///Below returns a map of values. The keys are:
     ///"recognitionResult", "hasPermission", "inferenceTime"
-    result?.listen((event) {
+    result?.listen((event) async {
       var data = event["recognitionResult"].toString();
+      await _getCurrentLocation();
       log("Recognition Result: " + data);
       log("Recognition event: $event");
-    }).onDone(() => isRecording.value = true);
+    }).onDone(() => isRecording.value = false);
   }
 
   ///fetches the labels from the text file in assets
@@ -243,7 +247,10 @@ class _MyAppState extends State<MyApp> {
             children: labelList!.map((labels) {
               if (labels == result) {
                 if (result == 'scream') {
-                  CommonFunctions.sendSms(twilioFlutter);
+                  CommonFunctions.sendSms(
+                    twilioFlutter: twilioFlutter,
+                    position: _currentPosition,
+                  );
                   TfliteAudio.stopAudioRecognition();
                 }
                 return Padding(
@@ -279,5 +286,16 @@ class _MyAppState extends State<MyApp> {
               fontSize: 20,
               color: Colors.black,
             )));
+  }
+
+  _getCurrentLocation() async {
+    // Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best, forceAndroidLocationManager: true).then((Position position) {
+    //   setState(() {
+    //     _currentPosition = position;
+    //   });
+    // }).catchError((e) {
+    //   print(e);
+    // });
+    _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 }
