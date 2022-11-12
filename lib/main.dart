@@ -13,8 +13,6 @@ import 'package:twilio_flutter/twilio_flutter.dart';
 
 void main() => runApp(const MyApp());
 
-///This example showcases how to take advantage of all the futures and streams
-///from the plugin.
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -29,58 +27,17 @@ class _MyAppState extends State<MyApp> {
   TwilioFlutter? twilioFlutter;
   Position? _currentPosition;
 
-  ///example values for decodedwav models
-  // final String model = 'assets/decoded_wav_model.tflite';
-  // final String label = 'assets/decoded_wav_label.txt';
-  // final String audioDirectory = 'assets/sample_audio_16k_mono.wav';
-  // final String inputType = 'decodedWav';
-  // final int sampleRate = 16000;
-  // final int bufferSize = 2000;
-  // // final int audioLength = 16000;
-
-  ///example values for google's teachable machine model
-  // final String model = 'assets/lite-model_yamnet_classification_tflite_1_1.tflite';
-  // final String label = 'assets/lite-model.txt';
-  // final String inputType = 'decodedWav';
-  //final String audioDirectory = 'assets/sample_audio_44k_mono.wav';
-  // final int sampleRate = 44100;
-  // final int bufferSize = 11016;
-  // final int audioLength = 44032;
-
-  ///example values for MFCC, melspectrogram, spectrogram models
-  // final String model = 'assets/audio_rec.tflite';
-  // final String label = 'assets/audio_rec.txt';
-  // final String inputType = 'spectrogram';
-
   final String model = 'assets/tf_lite_model.tflite';
   final String label = 'assets/thesis_label.txt';
   final String inputType = 'spectrogram';
-
-  // final String model = 'assets/melspectrogram_model.tflite';
-  // final String label = 'assets/melspectrogram_label.txt';
-  // final String inputType = 'melSpectrogram';
-
-  // final String model = 'assets/mfcc_model.tflite';
-  // final String label = 'assets/mfcc_label.txt';
-  // final String inputType = 'mfcc';
-
-  // final String audioDirectory = 'assets/sample_audio_16k_mono.wav';
-  // final int sampleRate = 16000;
-  // final int bufferSize = 2000;
-  // // final int audioLength = 16000;
-  // final String model = 'assets/cat_dog.tflite';
-  // final String label = 'assets/cat_dog.txt';
-  // final String inputType = 'rawAudio';
   final int sampleRate = 16000;
   final int bufferSize = 2000;
 
-  ///Optional parameters you can adjust to modify your input and output
   final bool outputRawScores = false;
   final int numOfInferences = 99999;
   final int numThreads = 1;
   final bool isAsset = true;
 
-  ///Adjust the values below when tuning model detection.
   final double detectionThreshold = 0.3;
   final int averageWindowDuration = 1000;
   final int minimumTimeBetweenSamples = 30;
@@ -96,9 +53,6 @@ class _MyAppState extends State<MyApp> {
     );
     initializePerms();
     TfliteAudio.loadModel(
-      // numThreads: this.numThreads,
-      // isAsset: this.isAsset,
-      // outputRawScores: outputRawScores,
       inputType: inputType,
       model: model,
       label: label,
@@ -106,8 +60,6 @@ class _MyAppState extends State<MyApp> {
       isAsset: true,
     );
 
-    //spectrogram parameters
-    //TfliteAudio.setSpectrogramParameters(nFFT: 256, hopLength: 129);
 
     // mfcc parameters
     TfliteAudio.setSpectrogramParameters(nMFCC: 40, hopLength: 16384);
@@ -121,31 +73,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void getResult() async {
-    ///example for stored audio file recognition
-    // result = TfliteAudio.startFileRecognition(
-    //   audioDirectory: audioDirectory,
-    //   sampleRate: sampleRate,
-    //   // audioLength: audioLength,
-    //   // detectionThreshold: detectionThreshold,
-    //   // averageWindowDuration: averageWindowDuration,
-    //   // minimumTimeBetweenSamples: minimumTimeBetweenSamples,
-    //   // suppressionTime: suppressionTime,
-    // );
-
-    ///example for recording recognition
     result = TfliteAudio.startAudioRecognition(
       sampleRate: sampleRate,
       bufferSize: bufferSize,
       numOfInferences: numOfInferences,
-      // audioLength: audioLength,
-      // detectionThreshold: detectionThreshold,
-      // averageWindowDuration: averageWindowDuration,
-      // minimumTimeBetweenSamples: minimumTimeBetweenSamples,
-      // suppressionTime: suppressionTime,
     );
 
-    ///Below returns a map of values. The keys are:
-    ///"recognitionResult", "hasPermission", "inferenceTime"
     result?.listen((event) async {
       var data = event["recognitionResult"].toString();
       await _getCurrentLocation();
@@ -154,7 +87,6 @@ class _MyAppState extends State<MyApp> {
     }).onDone(() => isRecording.value = false);
   }
 
-  ///fetches the labels from the text file in assets
   Future<List<String>> fetchLabelList() async {
     List<String> _labelList = [];
     await rootBundle.loadString(label).then((q) {
@@ -165,7 +97,7 @@ class _MyAppState extends State<MyApp> {
     return _labelList;
   }
 
-  ///handles null exception if snapshot is null.
+
   String showResult(AsyncSnapshot snapshot, String key) => snapshot.hasData ? snapshot.data[key].toString() : '0 ';
 
   @override
@@ -177,7 +109,6 @@ class _MyAppState extends State<MyApp> {
               title: const Text('Tflite-audio/speech'),
             ),
 
-            ///Streambuilder for inference results
             body: StreamBuilder<Map<dynamic, dynamic>>(
                 stream: result,
                 builder: (BuildContext context, AsyncSnapshot<Map<dynamic, dynamic>> inferenceSnapshot) {
@@ -187,7 +118,7 @@ class _MyAppState extends State<MyApp> {
                       builder: (BuildContext context, AsyncSnapshot<List<String>> labelSnapshot) {
                         switch (inferenceSnapshot.connectionState) {
                           case ConnectionState.none:
-                            //Loads the asset file.
+
                             if (labelSnapshot.hasData) {
                               return labelListWidget(labelSnapshot.data);
                             } else {
