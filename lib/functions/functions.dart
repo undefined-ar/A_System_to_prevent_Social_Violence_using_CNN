@@ -1,14 +1,17 @@
-import 'package:flutter_sms/flutter_sms.dart';
+import 'dart:developer';
+
+import 'package:geolocator/geolocator.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 class CommonFunctions {
-  static final _contactList = ["+8801947651802"];
-  static Future<void> sendSms() async {
+  static final _contactList = [""];
+  static Future<void> sendSms({TwilioFlutter? twilioFlutter, Position? position}) async {
     try {
-      String _result = await sendSMS(
-        message: "HELP ME PLEASE",
-        recipients: _contactList,
-        sendDirect: true,
+      await twilioFlutter?.sendSMS(
+        toNumber: '',
+        messageBody: 'help me plzz https://www.google.com/maps/search/?api=1&query=${position?.latitude},${position?.longitude}',
       );
+      log("POSITION ${position?.latitude} ${position?.longitude}");
     } catch (error) {
       print("FAILED TO SEND SMS");
     }
