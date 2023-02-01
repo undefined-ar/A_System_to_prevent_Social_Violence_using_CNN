@@ -4,8 +4,9 @@ A new Flutter project.
 
 
 Description :
-- This app can detect scream
-- This app can send emergergency message to a selected contact number whenever in danger using Twilio API
+- This app can detect scream and record sounds 
+- The records are being saved to the local storage of android device
+- This app can send emergency message to a selected contact number whenever in danger using Twilio API
 - This app can send location along with the notification using Geolocator 
 
 ## Getting Started
