@@ -1,4 +1,4 @@
-# thesis
+# Social Violence App
 
 A new Flutter project.
 
