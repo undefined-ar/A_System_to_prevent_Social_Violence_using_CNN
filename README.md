@@ -2,6 +2,12 @@
 
 A new Flutter project.
 
+
+Description :
+- This app can detect scream
+- This app can send emergergency message to a selected contact number whenever in danger using Twilio API
+- This app can send location along with the notification using Geolocator 
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
